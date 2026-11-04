@@ -1,0 +1,844 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Кофейня «Зерно» — демо</title>
+<meta name="description" content="Демонстрационный сайт кофейни: меню и заказ навынос, бронь стола, зерно для дома, галерея и контакты.">
+<link rel="alternate" hreflang="ru" href="?lang=ru">
+<link rel="alternate" hreflang="uz" href="?lang=uz">
+<meta name="theme-color" content="#1f3a2e">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preload" as="image" type="image/webp" imagesrcset="img/v3/hero-1400.webp 1400w, img/v3/hero-2400.webp 2400w" imagesizes="100vw" media="(min-width:761px)">
+<link rel="preload" as="image" type="image/webp" href="img/v3/hero-m-720.webp" media="(max-width:760px)">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<style>
+/* Warm coffee house: bottle-green walls, amber lamp light, oak and milk. Rounded, soft, unhurried. */
+:root{
+  --green:#1f3a2e; --green-2:#2b4a3c; --amber:#d9932f; --amber-dk:#a8691a; --milk:#faf6ee; --oat:#f0e7d7;
+  --ink:#2b1d15; --muted:#6b6157; --line:#e3d7c3;
+  --max:1240px; --gut:clamp(16px,4vw,40px); --r:22px;
+  --font:"Rubik",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--milk);color:var(--ink);font:400 17px/1.6 var(--font);overflow-x:hidden}
+img,svg,canvas{display:block;max-width:100%}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gut)}
+section{scroll-margin-top:76px}
+h1,h2,h3{font-weight:600;letter-spacing:-.02em}
+h2{font-size:clamp(34px,4.6vw,58px);line-height:1.02}
+.lead{color:var(--muted);max-width:34em}
+
+.demo-note{background:var(--green);color:#cfe0d6;font-size:13px;text-align:center;padding:6px var(--gut)}
+
+.top{position:sticky;top:0;z-index:50;background:rgba(250,246,238,.94);backdrop-filter:blur(10px);border-bottom:1px solid transparent;transition:border-color .3s}
+.top.line{border-color:var(--line)}
+.top .wrap{display:flex;align-items:center;gap:28px;height:72px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:24px;text-decoration:none;margin-right:auto;color:var(--green)}
+.brand i{width:30px;height:30px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+.nav{display:flex;gap:24px}
+.nav a{text-decoration:none;font-weight:500;font-size:15px;padding:6px 0;border-bottom:2px solid transparent}
+.nav a:hover{border-color:var(--amber)}
+.cart-btn{display:inline-flex;align-items:center;gap:8px;border:0;background:var(--green);color:#fff;border-radius:999px;padding:10px 16px;cursor:pointer;font-weight:500;font-size:15px}
+.cart-btn b{min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--amber);color:var(--ink);font-size:13px;display:grid;place-items:center}
+.burger{display:none;background:none;border:0;width:44px;height:44px;place-items:center;cursor:pointer}
+.lang{display:inline-flex;border:1.5px solid var(--line);border-radius:999px;padding:2px;background:#fff}
+.lang button{border:0;background:transparent;border-radius:999px;min-width:40px;height:36px;padding:0 10px;cursor:pointer;font-weight:600;font-size:14px;color:var(--muted)}
+.lang button[aria-pressed="true"]{background:var(--green);color:#fff}
+.demo-tag{display:inline-block;margin-left:8px;padding:2px 9px;border-radius:999px;background:var(--oat);color:var(--muted);font-size:13px;font-weight:500;vertical-align:middle;letter-spacing:0}
+.price-note{margin-top:8px;font-size:14px;color:#f6c77d}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:0;cursor:pointer;text-decoration:none;text-align:center;
+  font:500 16px/1.2 var(--font);padding:15px 26px;border-radius:999px;transition:background-color .2s,color .2s,box-shadow .2s,transform .1s}
+.btn:active{transform:translateY(1px)}
+.btn-amber{background:var(--amber);color:var(--ink)}
+.btn-amber:hover{background:#e7a446}
+.btn-green{background:var(--green);color:#fff}
+.btn-green:hover{background:var(--green-2)}
+.btn-milk{background:var(--milk);color:var(--ink)}
+.btn-milk:hover{background:#fff}
+.btn-line{background:transparent;color:inherit;box-shadow:inset 0 0 0 1.5px currentColor}
+.btn-line:hover{background:rgba(127,127,127,.1)}
+.btn-sm{padding:10px 18px;font-size:15px}
+
+/* hero: the render sits in a rounded "window" with the copy over its darker corner */
+.hero{padding:14px var(--gut) 0}
+.hero-frame{position:relative;max-width:1480px;margin:0 auto;border-radius:30px;overflow:hidden;background:#1a1410;color:#fbf3e6;min-height:min(calc(100svh - 120px),820px);display:flex;align-items:flex-end}
+.hero-frame picture,.hero-frame img.bg{position:absolute;inset:0;width:100%;height:100%}
+.hero-frame img.bg{object-fit:cover;object-position:60% 50%}
+.hero-frame::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(26,18,12,.86) 0%,rgba(26,18,12,.35) 42%,rgba(26,18,12,0) 64%),linear-gradient(90deg,rgba(26,18,12,.55),rgba(26,18,12,0) 55%)}
+.hero-copy{position:relative;z-index:1;padding:clamp(24px,4.4vw,64px);max-width:760px}
+.hero h1{font-size:clamp(40px,4.8vw,70px);line-height:1.02;font-weight:600;max-width:12em}
+.hero p{margin-top:18px;max-width:31em;font-size:clamp(17px,1.4vw,19px);color:#eadfcd}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.status{position:absolute;z-index:1;top:22px;right:22px;display:inline-flex;align-items:center;gap:9px;background:rgba(250,246,238,.92);color:var(--ink);padding:9px 16px;border-radius:999px;font-size:14px;font-weight:500}
+.status i{width:9px;height:9px;border-radius:50%;background:#3d9a5f;box-shadow:0 0 0 4px rgba(61,154,95,.2)}
+.status.closed i{background:var(--amber-dk);box-shadow:0 0 0 4px rgba(168,105,26,.2)}
+@media (prefers-reduced-motion:no-preference){
+  .js .hero-frame img.bg{animation:dawn 2.4s ease-out both}
+  .js .hero-copy>*{animation:rise .9s cubic-bezier(.2,.7,.2,1) both}
+  .js .hero-copy>*:nth-child(1){animation-delay:.3s}.js .hero-copy>*:nth-child(2){animation-delay:.45s}.js .hero-copy>*:nth-child(3){animation-delay:.6s}
+  @keyframes dawn{from{filter:brightness(.35) saturate(.6);transform:scale(1.05)}to{filter:none;transform:none}}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+}
+
+.section{padding:clamp(70px,9vw,120px) 0}
+.sec-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:16px 48px;margin-bottom:clamp(28px,4vw,48px)}
+
+/* services: photo cards + small cards */
+.svc-big{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;list-style:none}
+.svc{background:#fff;border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 0 var(--line),0 18px 40px -30px rgba(43,29,21,.45)}
+.svc .ph{aspect-ratio:4/3;overflow:hidden;background:var(--oat)}
+.svc .ph img{width:100%;height:100%;object-fit:cover}
+.svc .body{padding:22px 24px 24px;display:flex;flex-direction:column;flex:1;align-items:flex-start}
+.svc h3{font-size:24px}
+.svc p{color:var(--muted);margin:8px 0 18px;flex:1}
+.svc-small{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:20px;list-style:none}
+.mini{border:1.5px solid var(--line);border-radius:var(--r);padding:20px 22px}
+.mini h3{font-size:19px;margin-bottom:4px}
+.mini p{color:var(--muted);font-size:15px}
+
+/* menu */
+.menu{background:var(--green);color:#f3ece0}
+.menu h2{color:#fff}
+.menu .lead{color:#bcd0c4}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.tabs button{border:1.5px solid rgba(243,236,224,.3);background:transparent;color:#f3ece0;border-radius:999px;padding:10px 18px;cursor:pointer;font-weight:500;min-height:44px}
+.tabs button[aria-selected="true"]{background:var(--amber);border-color:var(--amber);color:var(--ink)}
+.mlist{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:0 48px}
+.mlist li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 16px;padding:16px 0;border-bottom:1px solid rgba(243,236,224,.16);align-items:center}
+.mlist .n{font-weight:500;font-size:18px;color:#fff}
+.mlist .d{grid-column:1;font-size:14px;color:#bcd0c4}
+.mlist .p{grid-row:1;grid-column:2;font-weight:600;font-variant-numeric:tabular-nums;text-align:right;color:#f6c77d}
+.qty{grid-row:2;grid-column:2;display:flex;align-items:center;justify-content:flex-end;gap:6px}
+.qty button{width:36px;height:36px;border-radius:50%;border:1.5px solid currentColor;background:transparent;color:inherit;cursor:pointer;font-size:20px;line-height:1;display:grid;place-items:center}
+.qty button:hover{background:var(--amber);border-color:var(--amber);color:var(--ink)}
+.qty output{min-width:20px;text-align:center;font-weight:600}
+.qty:not(.has) .minus,.qty:not(.has) output{display:none}
+.menu-note{margin-top:20px;font-size:14px;color:#bcd0c4}
+
+/* about: photo with an overlapping card, 3D cup tile */
+.about-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:clamp(24px,4vw,56px);align-items:center}
+.about-photo{position:relative;border-radius:var(--r);overflow:hidden;aspect-ratio:16/11;background:#1a1410}
+.about-photo img{width:100%;height:100%;object-fit:cover}
+.about-text h2{margin-bottom:18px}
+.about-text p+p{margin-top:12px}
+.facts{list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:26px}
+.facts li{background:var(--oat);border-radius:16px;padding:14px 16px;font-size:14px;color:var(--muted)}
+.facts b{display:block;color:var(--ink);font-size:16px;font-weight:600}
+.cup-tile{position:relative;margin-top:22px;border-radius:var(--r);background:radial-gradient(90% 90% at 50% 35%,var(--green-2),var(--green));height:300px;overflow:hidden;color:#bcd0c4}
+#cup{position:absolute;inset:0;width:100%;height:100%;cursor:grab;touch-action:pan-y}
+#cup:active{cursor:grabbing}
+.cup-cap{position:absolute;left:0;right:0;top:12px;text-align:center;font-size:13px;pointer-events:none}
+
+/* gallery: horizontal strip */
+.gallery{background:var(--oat)}
+.strip-nav{display:flex;gap:8px}
+.strip-nav button{width:48px;height:48px;border-radius:50%;border:1.5px solid var(--ink);background:transparent;cursor:pointer;font-size:22px;display:grid;place-items:center}
+.strip-nav button:hover{background:var(--ink);color:#fff}
+.strip-nav button:disabled{opacity:.3;cursor:default;background:transparent;color:inherit}
+.strip{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 var(--gut);padding:0 var(--gut) 12px;list-style:none;scrollbar-width:thin;
+  padding-left:max(var(--gut),calc((100% - var(--max))/2 + var(--gut)))}
+.strip li{flex:0 0 auto;scroll-snap-align:start}
+.strip button{display:block;border:0;padding:0;background:none;cursor:zoom-in;border-radius:18px;overflow:hidden;position:relative}
+.strip img{height:clamp(300px,42vw,520px);width:auto;max-width:none;object-fit:cover;transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+.strip button:hover img,.strip button:focus-visible img{transform:scale(1.035)}
+.strip figcaption{margin-top:10px;font-size:15px;color:var(--muted)}
+.lb{position:fixed;inset:0;z-index:80;background:rgba(26,18,12,.94);display:none;align-items:center;justify-content:center;padding:64px 16px 72px}
+.lb.open{display:flex}
+.lb img{max-width:min(1200px,100%);max-height:100%;object-fit:contain;border-radius:14px;transition:opacity .3s,transform .3s}
+.lb .cap{position:absolute;left:0;right:0;bottom:22px;text-align:center;color:#eadfcd;font-size:15px}
+.lb button{position:absolute;background:rgba(250,246,238,.12);border:0;color:#fbf3e6;width:48px;height:48px;border-radius:50%;cursor:pointer;font-size:26px;display:grid;place-items:center}
+.lb button:hover{background:rgba(250,246,238,.25)}
+.lb .x{top:12px;right:12px}.lb .prev{left:12px;top:50%;transform:translateY(-50%)}.lb .next{right:12px;top:50%;transform:translateY(-50%)}
+
+/* table booking */
+.book-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:clamp(20px,3.4vw,44px);align-items:start}
+form.table{background:#fff;border-radius:var(--r);padding:clamp(20px,3vw,34px);box-shadow:0 1px 0 var(--line),0 24px 50px -36px rgba(43,29,21,.5)}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+.field{margin-bottom:18px;min-width:0;border:0}
+.field>label,.field>.lab,legend{display:block;font-size:14px;font-weight:600;margin-bottom:7px}
+.opt{font-weight:400;color:var(--muted)}
+input,select,textarea{width:100%;background:var(--milk);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;outline:none;min-height:50px;transition:border-color .2s}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:var(--green)}
+[aria-invalid="true"]{border-color:#b3261e}
+.stepper{display:flex;align-items:center;gap:12px}
+.stepper button{width:46px;height:46px;border-radius:50%;border:1.5px solid var(--line);background:var(--milk);cursor:pointer;font-size:22px}
+.stepper button:hover{border-color:var(--green)}
+.stepper output{min-width:90px;text-align:center;font-weight:600}
+.zones{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.zones label{position:relative;display:block;cursor:pointer}
+.zones input{position:absolute;opacity:0;width:1px;height:1px;min-height:0}
+.zones span{display:block;border:1.5px solid var(--line);border-radius:14px;padding:12px;text-align:center;font-size:15px;background:var(--milk);line-height:1.3}
+.zones small{display:block;color:var(--muted);font-size:13px}
+.zones input:checked+span{border-color:var(--green);background:var(--green);color:#fff}
+.zones input:checked+span small{color:#cfe0d6}
+.zones input:focus-visible+span{outline:3px solid var(--amber);outline-offset:2px}
+.err{min-height:22px;color:#b3261e;font-size:14px;font-weight:500;margin:2px 0 10px}
+form.table .btn{width:100%}
+.confirm{position:sticky;top:96px;background:var(--green);color:#f3ece0;border-radius:var(--r);padding:26px}
+.confirm h3{font-size:24px;margin-bottom:12px;color:#fff}
+.confirm dl{display:grid;grid-template-columns:auto 1fr;gap:9px 14px;font-size:15px}
+.confirm dt{color:#a9c1b4}
+.confirm dd{text-align:right;font-weight:500}
+.confirm .ok{display:none;margin-top:16px;color:#f6c77d}
+.confirm.done .ok{display:block}
+.confirm .again{display:none;margin-top:14px;width:100%}
+.confirm.done .again{display:flex}
+.confirm .note{margin-top:14px;font-size:13px;color:#a9c1b4}
+
+/* contacts */
+.contact-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,4vw,64px)}
+.hours{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.hours td{padding:11px 0;border-bottom:1px solid var(--line)}
+.hours td:last-child{text-align:right}
+.hours tr.today td{font-weight:600;color:var(--green)}
+.contact h3{font-size:24px;margin-bottom:6px}
+.contact p{color:var(--muted)}
+.contact-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.foot{background:var(--green);color:#a9c1b4;font-size:14px;padding:28px 0}
+.foot .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
+
+/* order bar + dialog */
+.bar{position:fixed;left:50%;bottom:16px;z-index:60;transform:translate(-50%,150%);transition:transform .35s cubic-bezier(.2,.9,.3,1);display:flex;align-items:center;gap:16px;
+  background:var(--ink);color:#fff;border-radius:999px;padding:8px 8px 8px 22px;box-shadow:0 18px 40px -12px rgba(43,29,21,.6);max-width:calc(100% - 24px)}
+.bar.show{transform:translate(-50%,0)}
+.bar span{white-space:nowrap;font-size:15px}
+.bar .btn{padding:11px 20px}
+dialog{border:0;border-radius:24px;padding:0;width:min(560px,calc(100% - 24px));max-height:calc(100svh - 24px);margin:auto;background:var(--milk);color:var(--ink);box-shadow:0 40px 80px -20px rgba(0,0,0,.5)}
+dialog::backdrop{background:rgba(31,58,46,.6)}
+.dlg{padding:clamp(20px,4vw,32px)}
+.dlg-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.dlg-head h2{font-size:28px}
+.x{width:44px;height:44px;border-radius:50%;border:0;background:var(--oat);cursor:pointer;font-size:22px}
+.lines{list-style:none;margin-bottom:8px}
+.lines li{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.lines .qty{grid-row:auto;grid-column:auto}
+.lines .sum{min-width:72px;text-align:right;font-weight:500;font-variant-numeric:tabular-nums}
+.total{display:flex;justify-content:space-between;font-weight:600;font-size:20px;padding:14px 0 16px}
+.dlg .btn{width:100%}
+.empty-msg{color:var(--muted);padding:14px 0}
+.done-panel{text-align:center}
+.done-panel .no{font-size:clamp(64px,14vw,96px);font-weight:700;color:var(--green);line-height:1;margin:6px 0}
+.done-panel p{color:var(--muted);margin-bottom:16px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,160%);background:var(--ink);color:#fff;padding:12px 20px;border-radius:999px;font-size:15px;z-index:90;transition:transform .3s}
+.toast.show{transform:translate(-50%,0)}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+@media (max-width:1060px){
+  .svc-big,.svc-small{grid-template-columns:1fr 1fr}
+  .svc-big li:first-child{grid-column:1/-1}
+  .about-grid,.book-grid,.contact-grid{grid-template-columns:1fr}
+  .confirm{position:relative;top:0}
+}
+@media (max-width:760px){
+  .nav{display:none;position:absolute;top:72px;left:0;right:0;flex-direction:column;gap:0;background:var(--milk);padding:6px var(--gut) 14px;box-shadow:0 10px 24px -12px rgba(0,0,0,.3)}
+  .nav.open{display:flex}
+  .nav a{padding:14px 0;border-bottom:1px solid var(--line)}
+  .burger{display:grid}
+  .top .wrap{gap:10px}
+  .brand{font-size:21px}
+  .lang button{min-width:34px;padding:0 8px}
+  .cart-btn{padding:9px 12px}
+  .hero{padding:8px 8px 0}
+  .hero-frame{border-radius:22px;min-height:calc(100svh - 110px)}
+  .hero-frame img.bg{object-position:50% 0}
+  .hero-frame::after{background:linear-gradient(0deg,rgba(26,18,12,.95) 34%,rgba(26,18,12,.5) 56%,rgba(26,18,12,0) 72%)}
+  .status{top:14px;right:14px;left:14px;justify-content:center}
+  .hero-actions .btn{flex:1 1 auto}
+  .svc-big,.svc-small,.f2,.mlist{grid-template-columns:1fr}
+  .facts{grid-template-columns:1fr}
+  .zones{grid-template-columns:1fr}
+  .bar{left:12px;right:12px;transform:translateY(150%);justify-content:space-between}
+  .bar.show{transform:none}
+}
+</style>
+</head>
+<body>
+<div class="demo-note" data-t="note">Демо-проект для портфолио: кофейня вымышленная, цены примерные, заказы и брони никуда не отправляются.</div>
+
+<header class="top" id="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top"><i aria-hidden="true"><svg width="14" height="18" viewBox="0 0 14 18"><ellipse cx="7" cy="9" rx="5.5" ry="8" fill="#d9932f"/><path d="M7 1.5c-3 4 3 7 0 15" stroke="#1f3a2e" stroke-width="1.6" fill="none"/></svg></i><span data-t="brand">Зерно</span></a>
+    <nav class="nav" id="nav" data-ta="navAria" aria-label="Разделы">
+      <a href="#services" data-t="nServices">Услуги</a>
+      <a href="#menu" data-t="nMenu">Меню</a>
+      <a href="#about" data-t="nAbout">О нас</a>
+      <a href="#gallery" data-t="nGallery">Галерея</a>
+      <a href="#booking" data-t="nBooking">Бронь</a>
+      <a href="#contacts" data-t="nContacts">Контакты</a>
+    </nav>
+    <div class="lang" role="group" data-ta="langAria" aria-label="Язык сайта">
+      <button type="button" data-lang="ru" aria-pressed="true" lang="ru" title="Русский">RU</button>
+      <button type="button" data-lang="uz" aria-pressed="false" lang="uz" title="Oʻzbekcha">UZ</button>
+    </div>
+    <button class="cart-btn" type="button" data-open-order><span data-t="cart">Заказ</span> <b id="cnt">0</b></button>
+    <button class="burger" id="burger" aria-label="Открыть меню" aria-expanded="false" aria-controls="nav">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero" id="hero">
+  <div class="hero-frame">
+    <picture>
+      <source media="(max-width:760px)" srcset="img/v3/hero-m-720.webp 720w, img/v3/hero-m-1080.webp 1080w" sizes="100vw" type="image/webp">
+      <source srcset="img/v3/hero-1400.webp 1400w, img/v3/hero-2400.webp 2400w" sizes="100vw" type="image/webp">
+      <img class="bg" src="img/v3/hero.jpg" data-talt="heroAlt" alt="Чашка латте на дубовой стойке у окна, вечернее солнце, банка с кофейным зерном" fetchpriority="high">
+    </picture>
+    <div class="status" id="status"><i></i><span id="statusText" data-t="statusWait">Проверяем часы работы</span></div>
+    <div class="hero-copy">
+      <h1 data-t="h1">Кофейня, где утро начинается не спеша</h1>
+      <p data-t="heroP">«Зерно» — кофе из собственной обжарки, завтраки до полудня и стол у окна. Закажите заранее и заберите без очереди.</p>
+      <div class="hero-actions">
+        <a class="btn btn-amber" href="#menu" data-t="seeMenu">Посмотреть меню</a>
+        <a class="btn btn-line" href="#booking" data-t="bookTable">Забронировать стол</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="services">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 data-t="svcH">Чем можем помочь</h2>
+      <p class="lead" data-t="svcLead">Три самых частых повода зайти — и ещё немного полезного.</p>
+    </div>
+    <ul class="svc-big">
+      <li class="svc"><div class="ph"><picture><source srcset="img/v3/top-700.webp" type="image/webp"><img src="img/v3/top.jpg" data-talt="topAlt" alt="Чашка латте с рисунком сердца, вид сверху" loading="lazy"></picture></div>
+        <div class="body"><h3 data-t="s1h">Кофе с собой без очереди</h3><p data-t="s1p">Соберите заказ на сайте, выберите время — напиток будет ждать на стойке выдачи.</p><a class="btn btn-green btn-sm" href="#menu" data-t="s1b">Собрать заказ</a></div></li>
+      <li class="svc"><div class="ph"><picture><source srcset="img/v3/hero-700.webp" type="image/webp"><img src="img/v3/hero.jpg" data-talt="windowAlt" alt="Стойка у окна: чашка латте и печенье" loading="lazy"></picture></div>
+        <div class="body"><h3 data-t="s2h">Стол у окна</h3><p data-t="s2p">Забронируйте место для встречи или работы с ноутбуком: у окна, в зале или у стойки.</p><a class="btn btn-green btn-sm" href="#booking" data-t="s2b">Забронировать</a></div></li>
+      <li class="svc"><div class="ph"><picture><source srcset="img/v3/bag-700.webp" type="image/webp"><img src="img/v3/bag.jpg" data-talt="bagAlt" alt="Крафтовая пачка кофе и рассыпанное зерно" loading="lazy"></picture></div>
+        <div class="body"><h3 data-t="s3h">Зерно для дома</h3><p data-t="s3p">Обжариваем по четвергам небольшими партиями. Смолем под вашу турку, гейзер или воронку.</p><button class="btn btn-green btn-sm" type="button" data-add="bag" data-t="s3b">Добавить пачку к заказу</button></div></li>
+    </ul>
+    <ul class="svc-small">
+      <li class="mini"><h3 data-t="m1h">Завтраки до 12:00</h3><p data-t="m1p">Сырники, омлет, каша на овсяном молоке.</p></li>
+      <li class="mini"><h3 data-t="m2h">Кофе для офиса</h3><p data-t="m2p">Привезём зерно и поможем настроить кофемашину.</p></li>
+      <li class="mini"><h3 data-t="m3h">Дегустации по субботам</h3><p data-t="m3p">Пробуем три сорта и учимся заваривать. Запись — через бронь стола.</p></li>
+    </ul>
+  </div>
+</section>
+
+<section class="section menu" id="menu">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <h2 data-t="menuH">Меню и цены</h2>
+        <p class="price-note" data-t="priceNote">Цены примерные — демонстрационные данные, не прайс реального заведения.</p>
+      </div>
+      <p class="lead" data-t="menuLead">Нажмите «+», чтобы добавить позицию в заказ навынос.</p>
+    </div>
+    <div class="tabs" role="tablist" data-ta="tabsAria" aria-label="Разделы меню" id="tabs"></div>
+    <ul class="mlist" id="mlist" role="tabpanel"></ul>
+    <p class="menu-note" data-t="menuNote">Любой кофе можно на овсяном или безлактозном молоке — без доплаты.</p>
+  </div>
+</section>
+
+<section class="section" id="about">
+  <div class="wrap about-grid">
+    <div>
+      <div class="about-photo"><picture><source srcset="img/v3/room-700.webp 700w, img/v3/room-1200.webp 1200w" sizes="(max-width:1060px) 100vw, 55vw" type="image/webp"><img src="img/v3/room.jpg" data-talt="roomAlt" alt="Окно кофейни на закате, зелёные стены и лампы" loading="lazy"></picture></div>
+    </div>
+    <div class="about-text">
+      <h2 data-t="aboutH">О нас</h2>
+      <p data-t="about1">«Зерно» — небольшая кофейня с собственной обжаркой во дворе. Здесь зелёные стены, тёплые лампы и большое окно, в которое вечером светит солнце.</p>
+      <p data-t="about2">Мы варим кофе из зерна, обжаренного не раньше чем две недели назад, а выпечку берём у пекарни по соседству каждое утро.</p>
+      <ul class="facts">
+        <li data-th="f1"><b>24 места</b>и стойка у окна</li>
+        <li data-th="f2"><b>Обжарка</b>каждый четверг</li>
+        <li data-th="f3"><b>Розетки</b>у каждого стола</li>
+      </ul>
+      <div class="cup-tile" id="cupTile">
+        <canvas id="cup" role="img" data-ta="cupAria" aria-label="3D-чашка латте. Потяните, чтобы повернуть."></canvas>
+        <p class="cup-cap" id="cupCap" data-t="cupCap">Потяните чашку, чтобы повернуть</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section gallery" id="gallery">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 data-t="galH">Галерея</h2>
+      <div class="strip-nav"><button type="button" id="sPrev" data-ta="sPrev" aria-label="Листать назад">‹</button><button type="button" id="sNext" data-ta="sNext" aria-label="Листать вперёд">›</button></div>
+    </div>
+  </div>
+  <ul class="strip" id="strip"></ul>
+</section>
+
+<section class="section" id="booking">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 data-t="bookH">Бронь стола</h2>
+      <p class="lead" data-t="bookLead">Держим стол 15 минут после назначенного времени. Для компании больше 8 человек напишите в комментарии.</p>
+    </div>
+    <div class="book-grid">
+      <form class="table" id="tableForm" novalidate>
+        <div class="f2">
+          <div class="field"><label for="bday" data-t="lDay">День</label><select id="bday"></select></div>
+          <div class="field"><label for="btime" data-t="lTime">Время</label><select id="btime"></select></div>
+        </div>
+        <div class="field"><span class="lab" id="gLab" data-t="lGuests">Гостей</span>
+          <div class="stepper" role="group" aria-labelledby="gLab"><button type="button" id="gMinus" data-ta="gMinus" aria-label="Меньше гостей">−</button><output id="guests" aria-live="polite">2 гостя</output><button type="button" id="gPlus" data-ta="gPlus" aria-label="Больше гостей">+</button></div></div>
+        <fieldset class="field"><legend data-t="lZone">Где сесть</legend>
+          <div class="zones">
+            <label><input type="radio" name="zone" value="window" checked><span data-th="zWindow">У окна<small>2–4 места</small></span></label>
+            <label><input type="radio" name="zone" value="hall"><span data-th="zHall">В зале<small>до 8 мест</small></span></label>
+            <label><input type="radio" name="zone" value="bar"><span data-th="zBar">У стойки<small>1–2 места</small></span></label>
+          </div></fieldset>
+        <div class="f2">
+          <div class="field"><label for="tname" data-t="lName">Имя</label><input id="tname" autocomplete="given-name" data-tp="phTName" placeholder="На кого бронь"></div>
+          <div class="field"><label for="tphone" data-t="lPhone">Телефон</label><input id="tphone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+998 (90) 000-00-00"></div>
+        </div>
+        <div class="field"><label for="tnote" data-th="lNote">Комментарий <span class="opt">— необязательно</span></label><textarea id="tnote" data-tp="phNote" placeholder="Например: нужен детский стул"></textarea></div>
+        <div class="err" id="terr" role="alert"></div>
+        <button class="btn btn-green" type="submit" data-t="bookSubmit">Забронировать стол</button>
+      </form>
+      <aside class="confirm" id="confirm" aria-live="polite">
+        <h3 id="cTitle">Ваша бронь</h3>
+        <dl><dt data-t="lDay">День</dt><dd id="cDay"></dd><dt data-t="lTime">Время</dt><dd id="cTime"></dd><dt data-t="lGuests">Гостей</dt><dd id="cGuests"></dd><dt data-t="lPlace">Место</dt><dd id="cZone"></dd></dl>
+        <p class="ok" id="cOk"></p>
+        <button class="btn btn-milk again" type="button" id="cAgain" data-t="again">Забронировать ещё один стол</button>
+        <p class="note" data-t="bookDemo">Демо: бронь никуда не отправляется.</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="section gallery" id="contacts">
+  <div class="wrap contact-grid">
+    <div class="contact">
+      <h2 style="margin-bottom:18px" data-t="contH">Контакты</h2>
+      <h3><span data-t="addr">ул. Примерная, 8</span><span class="demo-tag" data-t="demoTag">демо</span></h3>
+      <p data-t="addrNote">Адрес вымышленный. У реального заведения здесь будут его адрес, карта и ориентир.</p>
+      <div class="contact-actions">
+        <button class="btn btn-green" type="button" id="copyAddr" data-t="copyAddr">Скопировать адрес</button>
+        <a class="btn btn-line" href="#booking" data-t="bookTable">Забронировать стол</a>
+      </div>
+      <p style="margin-top:14px;font-size:14px" data-t="contNote">Телефона и мессенджеров в демо нет — их добавит реальное заведение.</p>
+    </div>
+    <div>
+      <h3 style="font-size:24px;margin-bottom:8px"><span data-t="hoursH">Часы работы</span><span class="demo-tag" data-t="demoTag">демо</span></h3>
+      <table class="hours" id="hours" data-ta="hoursH" aria-label="Часы работы"></table>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="foot"><div class="wrap"><span data-t="foot">«Зерно» — демонстрационный проект, не реальная кофейня.</span><a href="#top" data-t="up">Наверх</a></div></footer>
+
+<div class="bar" id="bar" aria-hidden="true"><span id="barText"></span><button class="btn btn-amber" type="button" data-open-order tabindex="-1" data-t="checkout">Оформить</button></div>
+
+<dialog id="dlg" aria-labelledby="dlgTitle">
+  <div class="dlg" id="dlgForm">
+    <div class="dlg-head"><h2 id="dlgTitle" data-t="dlgH">Заказ навынос</h2><button class="x" type="button" data-close data-ta="close" aria-label="Закрыть">×</button></div>
+    <ul class="lines" id="lines"></ul>
+    <div class="total"><span data-t="totalL">Итого</span><span id="total">0 сум</span></div>
+    <form id="orderForm" novalidate>
+      <div class="field"><label for="pickup" data-t="lPickup">Когда заберёте</label><select id="pickup"></select></div>
+      <div class="f2">
+        <div class="field"><label for="oname" data-t="lName">Имя</label><input id="oname" autocomplete="given-name" data-tp="phOName" placeholder="Напишем на стаканчике"></div>
+        <div class="field"><label for="ophone" data-t="lPhone">Телефон</label><input id="ophone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+998 (90) 000-00-00"></div>
+      </div>
+      <div class="err" id="oerr" role="alert"></div>
+      <button class="btn btn-green" type="submit" data-t="orderSubmit">Оформить заказ</button>
+    </form>
+  </div>
+  <div class="dlg done-panel" id="dlgDone" hidden>
+    <p style="margin:0" data-t="doneH">Заказ оформлен. Номер для стойки выдачи:</p>
+    <div class="no" id="orderNo">—</div>
+    <p id="doneText"></p>
+    <p style="font-size:14px" data-t="orderDemo">Демо: заказ никуда не отправлен и не оплачивается.</p>
+    <button class="btn btn-green" type="button" data-close data-t="doneBtn">Готово</button>
+  </div>
+</dialog>
+
+<div class="lb" id="lb" role="dialog" aria-modal="true" data-ta="lbAria" aria-label="Просмотр фотографии">
+  <img id="lbImg" alt="">
+  <p class="cap" id="lbCap"></p>
+  <button class="x" type="button" id="lbClose" data-ta="close" aria-label="Закрыть">×</button>
+  <button class="prev" type="button" id="lbPrev" data-ta="lbPrev" aria-label="Предыдущее фото">‹</button>
+  <button class="next" type="button" id="lbNext" data-ta="lbNext" aria-label="Следующее фото">›</button>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+document.documentElement.classList.add("js");
+const $=id=>document.getElementById(id);
+const smooth=()=>matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth";
+const plural=(n,a,b,c)=>{const m=n%10,h=n%100;return m===1&&h!==11?a:m>=2&&m<=4&&(h<12||h>14)?b:c};
+
+// RU / UZ (Latin). Static text: data-t (text), data-th (html), data-tp (placeholder), data-ta (aria-label), data-talt (alt).
+const T={
+ru:{
+  title:"Кофейня «Зерно» — демо",desc:"Демонстрационный сайт кофейни: меню и заказ навынос, бронь стола, зерно для дома, галерея и контакты.",
+  note:"Демо-проект для портфолио: кофейня вымышленная, цены примерные, заказы и брони никуда не отправляются.",
+  brand:"Зерно",navAria:"Разделы",nServices:"Услуги",nMenu:"Меню",nAbout:"О нас",nGallery:"Галерея",nBooking:"Бронь",nContacts:"Контакты",
+  langAria:"Язык сайта",cart:"Заказ",burgerOpen:"Открыть меню",burgerClose:"Закрыть меню",
+  heroAlt:"Чашка латте на дубовой стойке у окна, вечернее солнце, банка с кофейным зерном",statusWait:"Проверяем часы работы",
+  h1:"Кофейня, где утро начинается не спеша",
+  heroP:"«Зерно» — кофе из собственной обжарки, завтраки до полудня и стол у окна. Закажите заранее и заберите без очереди.",
+  seeMenu:"Посмотреть меню",bookTable:"Забронировать стол",
+  svcH:"Чем можем помочь",svcLead:"Три самых частых повода зайти — и ещё немного полезного.",
+  topAlt:"Чашка латте с рисунком сердца, вид сверху",windowAlt:"Стойка у окна: чашка латте и печенье",bagAlt:"Крафтовая пачка кофе и рассыпанное зерно",
+  s1h:"Кофе с собой без очереди",s1p:"Соберите заказ на сайте, выберите время — напиток будет ждать на стойке выдачи.",s1b:"Собрать заказ",
+  s2h:"Стол у окна",s2p:"Забронируйте место для встречи или работы с ноутбуком: у окна, в зале или у стойки.",s2b:"Забронировать",
+  s3h:"Зерно для дома",s3p:"Обжариваем по четвергам небольшими партиями. Смолем под вашу турку, гейзер или воронку.",s3b:"Добавить пачку к заказу",
+  m1h:"Завтраки до 12:00",m1p:"Сырники, омлет, каша на овсяном молоке.",
+  m2h:"Кофе для офиса",m2p:"Привезём зерно и поможем настроить кофемашину.",
+  m3h:"Дегустации по субботам",m3p:"Пробуем три сорта и учимся заваривать. Запись — через бронь стола.",
+  menuH:"Меню и цены",priceNote:"Цены примерные — демонстрационные данные, не прайс реального заведения.",
+  menuLead:"Нажмите «+», чтобы добавить позицию в заказ навынос.",tabsAria:"Разделы меню",
+  menuNote:"Любой кофе можно на овсяном или безлактозном молоке — без доплаты.",
+  roomAlt:"Окно кофейни на закате, зелёные стены и лампы",aboutH:"О нас",
+  about1:"«Зерно» — небольшая кофейня с собственной обжаркой во дворе. Здесь зелёные стены, тёплые лампы и большое окно, в которое вечером светит солнце.",
+  about2:"Мы варим кофе из зерна, обжаренного не раньше чем две недели назад, а выпечку берём у пекарни по соседству каждое утро.",
+  f1:"<b>24 места</b>и стойка у окна",f2:"<b>Обжарка</b>каждый четверг",f3:"<b>Розетки</b>у каждого стола",
+  cupAria:"3D-чашка латте. Потяните, чтобы повернуть.",cupCap:"Потяните чашку, чтобы повернуть",
+  cupNoNet:"3D-модель не загрузилась: нет соединения с сетью.",cupNoGL:"3D недоступно в этом браузере.",
+  galH:"Галерея",sPrev:"Листать назад",sNext:"Листать вперёд",openPhoto:"Открыть фото: ",
+  bookH:"Бронь стола",bookLead:"Держим стол 15 минут после назначенного времени. Для компании больше 8 человек напишите в комментарии.",
+  lDay:"День",lTime:"Время",lGuests:"Гостей",gMinus:"Меньше гостей",gPlus:"Больше гостей",lZone:"Где сесть",lPlace:"Место",
+  zWindow:"У окна<small>2–4 места</small>",zHall:"В зале<small>до 8 мест</small>",zBar:"У стойки<small>1–2 места</small>",
+  zone:{window:"У окна",hall:"В зале",bar:"У стойки"},
+  lName:"Имя",phTName:"На кого бронь",lPhone:"Телефон",lNote:"Комментарий <span class=\"opt\">— необязательно</span>",phNote:"Например: нужен детский стул",
+  bookSubmit:"Забронировать стол",yourBooking:"Ваша бронь",booked:"Стол забронирован",again:"Забронировать ещё один стол",bookDemo:"Демо: бронь никуда не отправляется.",
+  bookedMsg:n=>`${n}, ждём вас. Держим стол 15 минут после назначенного времени.`,
+  errNoTime:"На этот день свободного времени нет — выберите другой день.",errTName:"Напишите имя, на которое оформить бронь.",
+  errPhone:"В номере не хватает цифр: нужен формат +998 (90) 000-00-00.",noSlots:"Сегодня мест нет — выберите другой день",
+  guests:n=>`${n} ${plural(n,"гость","гостя","гостей")}`,
+  today:"Сегодня",tomorrow:"Завтра",wd:["вс","пн","вт","ср","чт","пт","сб"],
+  months:["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"],
+  date:(d,m)=>`${d} ${m}`,
+  days:["Понедельник","Вторник","Среда","Четверг","Пятница","Суббота","Воскресенье"],todayMark:", сегодня",
+  openUntil:c=>`Сейчас открыто до ${c}`,closedOpens:o=>`Закрыто, откроемся в ${o}`,closedTomorrow:o=>`Закрыто, завтра с ${o}`,
+  contH:"Контакты",addr:"ул. Примерная, 8",demoTag:"демо",
+  addrNote:"Адрес вымышленный. У реального заведения здесь будут его адрес, карта и ориентир.",
+  copyAddr:"Скопировать адрес",copyText:"ул. Примерная, 8 (демо-адрес)",copied:"Адрес скопирован",copyFail:"Не получилось скопировать: ",
+  contNote:"Телефона и мессенджеров в демо нет — их добавит реальное заведение.",hoursH:"Часы работы",
+  foot:"«Зерно» — демонстрационный проект, не реальная кофейня.",up:"Наверх",
+  checkout:"Оформить",bar:(c,s)=>`${c} ${plural(c,"позиция","позиции","позиций")} на ${s}`,
+  dlgH:"Заказ навынос",close:"Закрыть",totalL:"Итого",lPickup:"Когда заберёте",phOName:"Напишем на стаканчике",orderSubmit:"Оформить заказ",
+  asap:" — как можно скорее",pickVal:(day,v)=>`${day.toLowerCase()} в ${v}`,
+  doneH:"Заказ оформлен. Номер для стойки выдачи:",orderDemo:"Демо: заказ никуда не отправлен и не оплачивается.",doneBtn:"Готово",
+  doneText:(n,w,s)=>`${n}, заказ будет готов ${w}. Сумма ${s}, оплата на месте.`,
+  empty:"В заказе пока пусто. Нажмите «+» рядом с позицией в меню.",errEmpty:"Заказ пуст: добавьте хотя бы одну позицию из меню.",
+  errOName:"Напишите имя — его назовут на выдаче.",bagAdded:"Пачка зерна добавлена в заказ",
+  qMinus:"Убрать: ",qPlus:"Добавить: ",lbAria:"Просмотр фотографии",lbPrev:"Предыдущее фото",lbNext:"Следующее фото",
+  of:(i,n)=>`${i} из ${n}`,sum:"сум"
+},
+uz:{
+  title:"«Zerno» kofexonasi — demo",desc:"Kofexona uchun namoyish sayti: menyu va olib ketish buyurtmasi, stol bron qilish, uy uchun qahva doni, galereya va aloqa.",
+  note:"Portfolio uchun demo-loyiha: kofexona oʻylab topilgan, narxlar taxminiy, buyurtma va bronlar hech qayerga yuborilmaydi.",
+  brand:"Zerno",navAria:"Boʻlimlar",nServices:"Xizmatlar",nMenu:"Menyu",nAbout:"Biz haqimizda",nGallery:"Galereya",nBooking:"Bron",nContacts:"Aloqa",
+  langAria:"Sayt tili",cart:"Buyurtma",burgerOpen:"Menyuni ochish",burgerClose:"Menyuni yopish",
+  heroAlt:"Deraza yonidagi eman peshtaxtada latte finjoni, kechki quyosh, qahva doni solingan banka",statusWait:"Ish vaqti tekshirilmoqda",
+  h1:"Tong shoshilmasdan boshlanadigan kofexona",
+  heroP:"«Zerno» — oʻzimiz qovurgan qahva, tushgacha nonushta va deraza yonidagi stol. Oldindan buyurtma bering va navbatsiz olib keting.",
+  seeMenu:"Menyuni koʻrish",bookTable:"Stol band qilish",
+  svcH:"Nimada yordam bera olamiz",svcLead:"Bizga kirishning eng koʻp uchraydigan uchta sababi — va yana bir oz foydali narsalar.",
+  topAlt:"Yurak shaklidagi latte, yuqoridan koʻrinish",windowAlt:"Deraza yonidagi peshtaxta: latte finjoni va pechenye",bagAlt:"Kraft paketdagi qahva va sochilgan donlar",
+  s1h:"Navbatsiz olib ketish uchun qahva",s1p:"Buyurtmani saytda yigʻing, vaqtni tanlang — ichimlik berish peshtaxtasida sizni kutadi.",s1b:"Buyurtma yigʻish",
+  s2h:"Deraza yonidagi stol",s2p:"Uchrashuv yoki noutbukda ishlash uchun joy band qiling: deraza yonida, zalda yoki peshtaxta yonida.",s2b:"Band qilish",
+  s3h:"Uy uchun qahva doni",s3p:"Har payshanba kichik partiyalarda qovuramiz. Turka, geyzer yoki voronkangizga moslab maydalab beramiz.",s3b:"Buyurtmaga paket qoʻshish",
+  m1h:"12:00 gacha nonushta",m1p:"Sirniki, omlet, suli sutidagi boʻtqa.",
+  m2h:"Ofis uchun qahva",m2p:"Qahva donini olib kelamiz va qahva mashinasini sozlashga yordam beramiz.",
+  m3h:"Shanba kungi degustatsiyalar",m3p:"Uch navni tatib koʻramiz va damlashni oʻrganamiz. Yozilish — stol bron qilish orqali.",
+  menuH:"Menyu va narxlar",priceNote:"Narxlar taxminiy — namoyish maʼlumotlari, haqiqiy muassasa narxlari emas.",
+  menuLead:"Mahsulotni olib ketish buyurtmasiga qoʻshish uchun «+» ni bosing.",tabsAria:"Menyu boʻlimlari",
+  menuNote:"Har qanday qahvani suli yoki laktozasiz sutda tayyorlaymiz — qoʻshimcha toʻlovsiz.",
+  roomAlt:"Kun botishida kofexona derazasi, yashil devorlar va chiroqlar",aboutH:"Biz haqimizda",
+  about1:"«Zerno» — hovlisida oʻz qovurish sexi bor kichik kofexona. Yashil devorlar, iliq chiroqlar va kechqurun quyosh tushadigan katta deraza.",
+  about2:"Qahvani ikki haftadan oldin qovurilmagan donlardan damlaymiz, pishiriqlarni esa har tongda qoʻshni novvoyxonadan olamiz.",
+  f1:"<b>24 oʻrin</b>va deraza yonida peshtaxta",f2:"<b>Qovurish</b>har payshanba",f3:"<b>Rozetkalar</b>har bir stol yonida",
+  cupAria:"Latte finjonining 3D modeli. Aylantirish uchun torting.",cupCap:"Aylantirish uchun finjonni torting",
+  cupNoNet:"3D model yuklanmadi: internetga ulanish yoʻq.",cupNoGL:"Bu brauzerda 3D ishlamaydi.",
+  galH:"Galereya",sPrev:"Orqaga",sNext:"Oldinga",openPhoto:"Rasmni ochish: ",
+  bookH:"Stol band qilish",bookLead:"Stolni belgilangan vaqtdan keyin 15 daqiqa ushlab turamiz. 8 kishidan ortiq boʻlsangiz, izohda yozing.",
+  lDay:"Kun",lTime:"Vaqt",lGuests:"Mehmonlar",gMinus:"Kamroq mehmon",gPlus:"Koʻproq mehmon",lZone:"Qayerda oʻtirasiz",lPlace:"Joy",
+  zWindow:"Deraza yonida<small>2–4 oʻrin</small>",zHall:"Zalda<small>8 oʻringacha</small>",zBar:"Peshtaxta yonida<small>1–2 oʻrin</small>",
+  zone:{window:"Deraza yonida",hall:"Zalda",bar:"Peshtaxta yonida"},
+  lName:"Ism",phTName:"Kimning nomiga",lPhone:"Telefon",lNote:"Izoh <span class=\"opt\">— ixtiyoriy</span>",phNote:"Masalan: bolalar stuli kerak",
+  bookSubmit:"Stolni band qilish",yourBooking:"Sizning broningiz",booked:"Stol band qilindi",again:"Yana bitta stol band qilish",bookDemo:"Demo: bron hech qayerga yuborilmaydi.",
+  bookedMsg:n=>`${n}, sizni kutamiz. Stolni belgilangan vaqtdan keyin 15 daqiqa ushlab turamiz.`,
+  errNoTime:"Bu kunga boʻsh vaqt yoʻq — boshqa kunni tanlang.",errTName:"Bron qaysi ismga yozilishini kiriting.",
+  errPhone:"Raqam toʻliq emas: +998 (90) 000-00-00 formatida kiriting.",noSlots:"Bugun joy yoʻq — boshqa kunni tanlang",
+  guests:n=>`${n} mehmon`,
+  today:"Bugun",tomorrow:"Ertaga",wd:["ya","du","se","cho","pa","ju","sh"],
+  months:["yanvar","fevral","mart","aprel","may","iyun","iyul","avgust","sentabr","oktabr","noyabr","dekabr"],
+  date:(d,m)=>`${d}-${m}`,
+  days:["Dushanba","Seshanba","Chorshanba","Payshanba","Juma","Shanba","Yakshanba"],todayMark:", bugun",
+  openUntil:c=>`Hozir ochiq, ${c} gacha`,closedOpens:o=>`Yopiq, ${o} da ochilamiz`,closedTomorrow:o=>`Yopiq, ertaga ${o} dan`,
+  contH:"Aloqa",addr:"Namuna koʻchasi, 8",demoTag:"demo",
+  addrNote:"Manzil oʻylab topilgan. Haqiqiy muassasada bu yerda uning manzili, xaritasi va moʻljal boʻladi.",
+  copyAddr:"Manzilni nusxalash",copyText:"Namuna koʻchasi, 8 (demo-manzil)",copied:"Manzil nusxalandi",copyFail:"Nusxalab boʻlmadi: ",
+  contNote:"Demoda telefon va messenjerlar yoʻq — ularni haqiqiy muassasa qoʻshadi.",hoursH:"Ish vaqti",
+  foot:"«Zerno» — namoyish loyihasi, haqiqiy kofexona emas.",up:"Yuqoriga",
+  checkout:"Rasmiylashtirish",bar:(c,s)=>`${c} ta mahsulot — ${s}`,
+  dlgH:"Olib ketish uchun buyurtma",close:"Yopish",totalL:"Jami",lPickup:"Qachon olib ketasiz",phOName:"Stakanga yozib qoʻyamiz",orderSubmit:"Buyurtmani rasmiylashtirish",
+  asap:" — imkon qadar tezroq",pickVal:(day,v)=>`${day.toLowerCase()} soat ${v} da`,
+  doneH:"Buyurtma rasmiylashtirildi. Berish peshtaxtasi uchun raqam:",orderDemo:"Demo: buyurtma hech qayerga yuborilmadi va toʻlanmaydi.",doneBtn:"Tayyor",
+  doneText:(n,w,s)=>`${n}, buyurtma ${w} tayyor boʻladi. Summa ${s}, toʻlov joyida.`,
+  empty:"Buyurtma hozircha boʻsh. Menyudagi mahsulot yonidagi «+» ni bosing.",errEmpty:"Buyurtma boʻsh: menyudan kamida bitta mahsulot qoʻshing.",
+  errOName:"Ismingizni yozing — buyurtma berilganda shu ism bilan chaqiramiz.",bagAdded:"Qahva doni paketi buyurtmaga qoʻshildi",
+  qMinus:"Olib tashlash: ",qPlus:"Qoʻshish: ",lbAria:"Rasmni koʻrish",lbPrev:"Oldingi rasm",lbNext:"Keyingi rasm",
+  of:(i,n)=>`${i} / ${n}`,sum:"soʻm"
+}};
+let lang="ru";
+try{const q=new URLSearchParams(location.search).get("lang");lang=q==="uz"||q==="ru"?q:(localStorage.getItem("zerno-lang")||lang);}catch{}
+if(!T[lang])lang="ru";
+const t=k=>T[lang][k];
+const money=n=>n.toLocaleString("ru-RU").replace(/ | /g," ")+" "+t("sum");
+
+// Prices: illustrative Tashkent coffee-shop levels (UZS), not a real price list.
+const MENU=[
+  {id:"coffee",name:{ru:"Кофе",uz:"Qahva"},items:[
+    {id:"esp",ru:["Эспрессо","30 мл, зерно недели"],uz:["Espresso","30 ml, hafta doni"],p:22000},
+    {id:"amer",ru:["Американо","250 мл"],uz:["Amerikano","250 ml"],p:25000},
+    {id:"capp",ru:["Капучино","250 мл"],uz:["Kapuchino","250 ml"],p:32000},
+    {id:"flat",ru:["Флэт уайт","200 мл, двойной ристретто"],uz:["Flet uayt","200 ml, qoʻsh ristretto"],p:35000},
+    {id:"latte",ru:["Латте","350 мл"],uz:["Latte","350 ml"],p:35000},
+    {id:"raf",ru:["Раф с мёдом","300 мл, сливки и мёд"],uz:["Asalli raf","300 ml, qaymoq va asal"],p:42000},
+    {id:"filter",ru:["Фильтр-кофе","250 мл, воронка"],uz:["Filtr-qahva","250 ml, voronka"],p:30000},
+    {id:"cold",ru:["Колд брю","300 мл, со льдом"],uz:["Kold bryu","300 ml, muz bilan"],p:38000}]},
+  {id:"other",name:{ru:"Не кофе",uz:"Qahvasiz"},items:[
+    {id:"cocoa",ru:["Какао","300 мл, тёмный шоколад"],uz:["Kakao","300 ml, qora shokolad"],p:32000},
+    {id:"matcha",ru:["Матча-латте","300 мл"],uz:["Matcha-latte","300 ml"],p:42000},
+    {id:"tea",ru:["Чай листовой","400 мл, чайник"],uz:["Bargli choy","400 ml, choynak"],p:28000},
+    {id:"lemonade",ru:["Домашний лимонад","400 мл, мята и лимон"],uz:["Uy limonadi","400 ml, yalpiz va limon"],p:30000}]},
+  {id:"breakfast",name:{ru:"Завтраки",uz:"Nonushta"},items:[
+    {id:"syrniki",ru:["Сырники","со сметаной и ягодами, до 12:00"],uz:["Sirniki","smetana va rezavorlar bilan, 12:00 gacha"],p:45000},
+    {id:"omelet",ru:["Омлет","с сыром и зеленью, до 12:00"],uz:["Omlet","pishloq va koʻkatlar bilan, 12:00 gacha"],p:40000},
+    {id:"porridge",ru:["Овсяная каша","на овсяном молоке, с бананом"],uz:["Suli boʻtqasi","suli sutida, banan bilan"],p:35000},
+    {id:"toast",ru:["Тост с авокадо","и яйцом пашот"],uz:["Avokadoli tost","pashot tuxum bilan"],p:55000}]},
+  {id:"bakery",name:{ru:"Выпечка",uz:"Pishiriqlar"},items:[
+    {id:"crois",ru:["Круассан","на сливочном масле"],uz:["Kruassan","sariyogʻda"],p:22000},
+    {id:"bun",ru:["Булочка с корицей","со сливочным кремом"],uz:["Dolchinli bulochka","qaymoqli krem bilan"],p:25000},
+    {id:"banana",ru:["Банановый хлеб","кусок, с орехами"],uz:["Banan noni","bir boʻlak, yongʻoq bilan"],p:24000},
+    {id:"cookie",ru:["Овсяное печенье","2 штуки"],uz:["Suli pechenyesi","2 dona"],p:15000}]}
+];
+const BAG={id:"bag",ru:["Зерно для дома, 250 г","обжарка этой недели"],uz:["Uy uchun qahva doni, 250 g","shu haftaning qovurmasi"],p:120000};
+const ALL=Object.fromEntries([...MENU.flatMap(c=>c.items),BAG].map(i=>[i.id,i]));
+const nm=i=>i[lang][0],ds=i=>i[lang][1];
+const cart={};let curCat="coffee";
+
+function applyStatic(){
+  document.documentElement.lang=lang;document.title=t("title");document.querySelector('meta[name=description]').content=t("desc");
+  document.querySelectorAll("[data-t]").forEach(el=>el.textContent=t(el.dataset.t));
+  document.querySelectorAll("[data-th]").forEach(el=>el.innerHTML=t(el.dataset.th));
+  document.querySelectorAll("[data-tp]").forEach(el=>el.placeholder=t(el.dataset.tp));
+  document.querySelectorAll("[data-ta]").forEach(el=>el.setAttribute("aria-label",t(el.dataset.ta)));
+  document.querySelectorAll("[data-talt]").forEach(el=>el.alt=t(el.dataset.talt));
+  document.querySelectorAll("[data-lang]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.lang===lang));
+  const o=$("nav").classList.contains("open");$("burger").setAttribute("aria-label",t(o?"burgerClose":"burgerOpen"));
+}
+
+// menu tabs
+function tabsHTML(){$("tabs").innerHTML=MENU.map(c=>`<button type="button" role="tab" id="tab-${c.id}" aria-selected="${c.id===curCat}" tabindex="${c.id===curCat?0:-1}" data-c="${c.id}">${c.name[lang]}</button>`).join("");}
+const qtyHTML=i=>`<span class="qty" data-id="${i.id}"><button type="button" class="minus" aria-label="${t("qMinus")}${nm(i)}">−</button><output>0</output><button type="button" class="plus" aria-label="${t("qPlus")}${nm(i)}">+</button></span>`;
+function showCat(cid){
+  curCat=cid;
+  document.querySelectorAll("#tabs button").forEach(b=>{const on=b.dataset.c===cid;b.setAttribute("aria-selected",on);b.tabIndex=on?0:-1;});
+  $("mlist").setAttribute("aria-labelledby","tab-"+cid);
+  $("mlist").innerHTML=MENU.find(c=>c.id===cid).items.map(i=>`<li><span class="n">${nm(i)}</span><span class="p">${money(i.p)}</span><span class="d">${ds(i)}</span>${qtyHTML(i)}</li>`).join("");
+  render();
+}
+$("tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(b)showCat(b.dataset.c)});
+$("tabs").addEventListener("keydown",e=>{if(!/Arrow(Left|Right)/.test(e.key))return;const bs=[...$("tabs").children],i=bs.findIndex(b=>b.getAttribute("aria-selected")==="true");
+  const n=bs[(i+(e.key==="ArrowRight"?1:bs.length-1))%bs.length];showCat(n.dataset.c);n.focus();});
+
+function setQty(id,d){cart[id]=Math.max(0,(cart[id]||0)+d);if(!cart[id])delete cart[id];render();}
+document.addEventListener("click",e=>{
+  const q=e.target.closest(".qty button");if(q){setQty(q.parentElement.dataset.id,q.classList.contains("plus")?1:-1);return}
+  const a=e.target.closest("[data-add]");if(a){setQty(a.dataset.add,1);toast(t("bagAdded"));}
+});
+function render(){
+  const ids=Object.keys(cart),count=ids.reduce((s,i)=>s+cart[i],0),sum=ids.reduce((s,i)=>s+cart[i]*ALL[i].p,0);
+  document.querySelectorAll(".qty[data-id]").forEach(q=>{const n=cart[q.dataset.id]||0;q.classList.toggle("has",n>0);q.querySelector("output").textContent=n;});
+  $("cnt").textContent=count;
+  $("barText").textContent=T[lang].bar(count,money(sum));
+  const bar=$("bar");bar.classList.toggle("show",count>0);bar.setAttribute("aria-hidden",count?"false":"true");bar.querySelector("button").tabIndex=count?0:-1;
+  $("lines").innerHTML=ids.length?ids.map(i=>`<li><span>${nm(ALL[i])}</span>${qtyHTML(ALL[i]).replace('class="qty"','class="qty has"').replace("<output>0</output>",`<output>${cart[i]}</output>`)}<span class="sum">${money(cart[i]*ALL[i].p)}</span></li>`).join("")
+    :`<li class="empty-msg" style="display:block">${t("empty")}</li>`;
+  $("total").textContent=money(sum);
+}
+
+// opening hours (ISO weekday index 1..7) — demo hours
+const HOURS=[null,[7.5,21],[7.5,21],[7.5,21],[7.5,21],[7.5,21],[9,21],[9,21]];
+const hm=h=>Math.floor(h)+":"+(h%1?"30":"00");
+const iso=d=>d.getDay()||7;
+function openState(now=new Date()){const [o,c]=HOURS[iso(now)],tt=now.getHours()+now.getMinutes()/60;return {open:tt>=o&&tt<c,o,c,t:tt};}
+function hoursUI(){const s=openState(),L=T[lang];$("status").classList.toggle("closed",!s.open);
+  if(s.open)$("statusText").textContent=L.openUntil(hm(s.c));
+  else{const tm=HOURS[iso(new Date(Date.now()+864e5))];$("statusText").textContent=s.t<s.o?L.closedOpens(hm(s.o)):L.closedTomorrow(hm(tm[0]));}
+  const today=iso(new Date());
+  $("hours").innerHTML=L.days.map((d,i)=>`<tr class="${i+1===today?"today":""}"><td>${d}${i+1===today?L.todayMark:""}</td><td>${hm(HOURS[i+1][0])}–${hm(HOURS[i+1][1])}</td></tr>`).join("");
+}
+
+// order dialog
+function pickupOptions(){
+  const sel=$("pickup"),keep=sel.selectedIndex;sel.innerHTML="";const now=new Date();let day=new Date(now.getTime()+15*60000);day.setMinutes(Math.ceil(day.getMinutes()/10)*10,0,0);
+  let [o,c]=HOURS[iso(day)],tt=day.getHours()+day.getMinutes()/60,isToday=true;
+  if(tt>=c-.25){day=new Date(now);day.setDate(day.getDate()+1);[o,c]=HOURS[iso(day)];day.setHours(Math.floor(o),o%1?30:0,0,0);isToday=false;}
+  else if(tt<o)day.setHours(Math.floor(o),o%1?30:0,0,0);
+  const label=t(isToday?"today":"tomorrow");
+  for(let i=0;i<12;i++){const x=new Date(day.getTime()+i*600000);if(x.getHours()+x.getMinutes()/60>c-.25)break;const v=x.toTimeString().slice(0,5);
+    sel.add(new Option(`${label}, ${v}${i===0&&isToday&&openState(now).open?t("asap"):""}`,T[lang].pickVal(label,v)));}
+  if(keep>0&&keep<sel.options.length)sel.selectedIndex=keep;
+}
+const dlg=$("dlg");let placed=false;
+function finish(){if(!placed)return;placed=false;for(const k in cart)delete cart[k];$("orderForm").reset();render();}
+document.addEventListener("click",e=>{
+  if(e.target.closest("[data-open-order]")){render();pickupOptions();$("dlgForm").hidden=false;$("dlgDone").hidden=true;$("oerr").textContent="";dlg.showModal();}
+  if(e.target.closest("[data-close]")||e.target===dlg){finish();dlg.close();}
+});
+dlg.addEventListener("close",finish);
+// Uzbekistan numbers: +998 (XX) XXX-XX-XX
+function phoneMask(el){el.addEventListener("input",()=>{let d=el.value.replace(/\D/g,"");if(!d){el.value="";return}
+  if(d.startsWith("998"))d=d.slice(3);d=d.slice(0,9);const p=[d.slice(0,2),d.slice(2,5),d.slice(5,7),d.slice(7,9)];
+  el.value="+998"+(p[0]?" ("+p[0]:"")+(p[0].length===2?")":"")+(p[1]?" "+p[1]:"")+(p[2]?"-"+p[2]:"")+(p[3]?"-"+p[3]:"");el.removeAttribute("aria-invalid");});}
+phoneMask($("ophone"));phoneMask($("tphone"));
+const phoneOk=el=>el.value.replace(/\D/g,"").length===12;
+$("orderForm").addEventListener("submit",e=>{
+  e.preventDefault();const err=$("oerr"),n=$("oname"),ph=$("ophone");n.removeAttribute("aria-invalid");
+  if(!Object.keys(cart).length){err.textContent=t("errEmpty");return}
+  if(n.value.trim().length<2){err.textContent=t("errOName");n.setAttribute("aria-invalid","true");n.focus();return}
+  if(!phoneOk(ph)){err.textContent=t("errPhone");ph.setAttribute("aria-invalid","true");ph.focus();return}
+  err.textContent="";$("orderNo").textContent=String(10+Math.floor(Math.random()*90));
+  $("doneText").textContent=T[lang].doneText(n.value.trim(),$("pickup").value,$("total").textContent);
+  placed=true;$("dlgForm").hidden=true;$("dlgDone").hidden=false;$("dlgDone").querySelector("button").focus();
+});
+
+// table booking
+const bday=$("bday"),btime=$("btime");let guests=2,tbooked=false;
+function fillDays(){const keep=bday.selectedIndex;bday.innerHTML="";const L=T[lang];
+  for(let i=0;i<14;i++){const d=new Date();d.setDate(d.getDate()+i);bday.add(new Option((i===0?L.today:i===1?L.tomorrow:L.wd[d.getDay()])+", "+L.date(d.getDate(),L.months[d.getMonth()]),i));}
+  bday.selectedIndex=keep>0?keep:0;}
+function fillTimes(){const keep=btime.value;const d=new Date();d.setDate(d.getDate()+ +bday.value);const [o,c]=HOURS[iso(d)],now=new Date();btime.innerHTML="";
+  for(let x=Math.ceil(o*2)/2;x<=c-1;x+=.5){if(+bday.value===0&&x<=now.getHours()+now.getMinutes()/60+.5)continue;btime.add(new Option(hm(x),hm(x)));}
+  if(!btime.options.length)btime.add(new Option(t("noSlots"),""));
+  if(keep&&[...btime.options].some(op=>op.value===keep))btime.value=keep;summary();}
+function summary(){$("cDay").textContent=bday.options[bday.selectedIndex].text;$("cTime").textContent=btime.value||"—";
+  $("cGuests").textContent=guests;$("cZone").textContent=t("zone")[document.querySelector("input[name=zone]:checked").value];
+  $("guests").textContent=T[lang].guests(guests);$("gMinus").disabled=guests<=1;$("gPlus").disabled=guests>=8;}
+bday.addEventListener("change",fillTimes);btime.addEventListener("change",summary);
+document.querySelectorAll("input[name=zone]").forEach(r=>r.addEventListener("change",summary));
+$("gMinus").addEventListener("click",()=>{guests=Math.max(1,guests-1);summary()});$("gPlus").addEventListener("click",()=>{guests=Math.min(8,guests+1);summary()});
+let bookedName="";
+function bookingTexts(){$("cTitle").textContent=t(tbooked?"booked":"yourBooking");$("cOk").textContent=tbooked?T[lang].bookedMsg(bookedName):"";}
+$("tableForm").addEventListener("submit",e=>{
+  e.preventDefault();if(tbooked)return;const err=$("terr"),n=$("tname"),ph=$("tphone");n.removeAttribute("aria-invalid");
+  if(!btime.value){err.textContent=t("errNoTime");bday.focus();return}
+  if(n.value.trim().length<2){err.textContent=t("errTName");n.setAttribute("aria-invalid","true");n.focus();return}
+  if(!phoneOk(ph)){err.textContent=t("errPhone");ph.setAttribute("aria-invalid","true");ph.focus();return}
+  err.textContent="";tbooked=true;bookedName=n.value.trim();$("confirm").classList.add("done");bookingTexts();
+  [...$("tableForm").elements].forEach(el=>el.disabled=true);
+  if(matchMedia("(max-width:1060px)").matches)$("confirm").scrollIntoView({behavior:smooth(),block:"center"});
+  $("cAgain").focus({preventScroll:true});
+});
+$("cAgain").addEventListener("click",()=>{tbooked=false;$("confirm").classList.remove("done");bookingTexts();
+  [...$("tableForm").elements].forEach(el=>el.disabled=false);$("tableForm").reset();guests=2;bday.selectedIndex=0;fillTimes();$("tname").focus();});
+
+// gallery strip + lightbox
+const PHOTOS=[
+  {f:"hero",ru:["Чашка латте на стойке у окна","Стойка у окна"],uz:["Deraza yonidagi peshtaxtada latte finjoni","Deraza yonidagi peshtaxta"]},
+  {f:"top",ru:["Латте с рисунком сердца, вид сверху","Латте"],uz:["Yurak shaklidagi latte, yuqoridan","Latte"]},
+  {f:"pour",ru:["Керамическая воронка на стеклянном чайнике с кофе","Фильтр-кофе в воронке"],uz:["Shisha choynak ustidagi keramik voronka","Voronkada filtr-qahva"]},
+  {f:"beans",ru:["Деревянный совок с обжаренным зерном","Зерно этой недели"],uz:["Qovurilgan donli yogʻoch kurakcha","Shu haftaning doni"]},
+  {f:"room",ru:["Зал: окно, лампы, растение на подоконнике","Зал"],uz:["Zal: deraza, chiroqlar, deraza tokchasidagi gul","Zal"]},
+  {f:"bag",ru:["Крафтовая пачка кофе и зёрна на столе","Зерно для дома"],uz:["Stol ustidagi kraft paket va qahva donlari","Uy uchun qahva doni"]}
+];
+const strip=$("strip");
+function stripHTML(){strip.innerHTML=PHOTOS.map((p,i)=>`<li><figure><button type="button" data-i="${i}" aria-label="${t("openPhoto")}${p[lang][1]}"><picture><source srcset="img/v3/${p.f}-700.webp" type="image/webp"><img src="img/v3/${p.f}.jpg" alt="${p[lang][0]}" loading="lazy" decoding="async"></picture></button><figcaption>${p[lang][1]}</figcaption></figure></li>`).join("");}
+const stepW=()=>Math.min(strip.clientWidth*.8,600);
+$("sPrev").onclick=()=>strip.scrollBy({left:-stepW(),behavior:smooth()});$("sNext").onclick=()=>strip.scrollBy({left:stepW(),behavior:smooth()});
+function navState(){$("sPrev").disabled=strip.scrollLeft<8;$("sNext").disabled=strip.scrollLeft+strip.clientWidth>=strip.scrollWidth-8;}
+strip.addEventListener("scroll",navState,{passive:true});addEventListener("resize",navState);setTimeout(navState,300);
+const lb=$("lb"),lbImg=$("lbImg");let cur=0,lastFocus=null;
+function lbCaption(){const p=PHOTOS[cur];lbImg.alt=p[lang][0];$("lbCap").textContent=`${p[lang][1]} — ${T[lang].of(cur+1,PHOTOS.length)}`;}
+function setPhoto(i,dir=0){cur=(i+PHOTOS.length)%PHOTOS.length;const p=PHOTOS[cur];lbImg.style.opacity=0;lbImg.style.transform=`translateX(${dir*24}px)`;
+  const im=new Image();im.onload=()=>{lbImg.src=im.src;lbImg.style.opacity=1;lbImg.style.transform="none"};im.src=`img/v3/${p.f}-${p.f==="hero"?1400:1200}.webp`;
+  lbCaption();}
+function openLb(i){lastFocus=document.activeElement;setPhoto(i);lb.classList.add("open");document.body.style.overflow="hidden";$("lbClose").focus();}
+function closeLb(){lb.classList.remove("open");document.body.style.overflow="";lastFocus&&lastFocus.focus();}
+strip.addEventListener("click",e=>{const b=e.target.closest("button[data-i]");if(b)openLb(+b.dataset.i)});
+$("lbClose").onclick=closeLb;$("lbPrev").onclick=()=>setPhoto(cur-1,-1);$("lbNext").onclick=()=>setPhoto(cur+1,1);
+lb.addEventListener("click",e=>{if(e.target===lb)closeLb()});
+addEventListener("keydown",e=>{if(!lb.classList.contains("open"))return;if(e.key==="Escape")closeLb();if(e.key==="ArrowLeft")setPhoto(cur-1,-1);if(e.key==="ArrowRight")setPhoto(cur+1,1);
+  if(e.key==="Tab"){const f=[$("lbClose"),$("lbPrev"),$("lbNext")],i=f.indexOf(document.activeElement);e.preventDefault();f[(i+(e.shiftKey?2:1))%3].focus();}});
+let tx=null;lb.addEventListener("touchstart",e=>{tx=e.touches[0].clientX},{passive:true});
+lb.addEventListener("touchend",e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>50)setPhoto(cur+(dx<0?1:-1),dx<0?1:-1);tx=null;});
+
+// misc
+function toast(s){const el=$("toast");el.textContent=s;el.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove("show"),2400);}
+$("copyAddr").addEventListener("click",async()=>{const s=t("copyText");try{await navigator.clipboard.writeText(s);toast(t("copied"));}catch{toast(t("copyFail")+s);}});
+addEventListener("scroll",()=>$("topbar").classList.toggle("line",scrollY>10),{passive:true});
+const nav=$("nav"),burger=$("burger");
+burger.addEventListener("click",()=>{const o=nav.classList.toggle("open");burger.setAttribute("aria-expanded",o);burger.setAttribute("aria-label",t(o?"burgerClose":"burgerOpen"))});
+nav.addEventListener("click",e=>{if(e.target.tagName==="A"){nav.classList.remove("open");burger.setAttribute("aria-expanded","false");burger.setAttribute("aria-label",t("burgerOpen"))}});
+
+// language switch: re-renders every text, keeps the cart, booking and open dialogs
+function setLang(l,save=true){
+  lang=l;
+  if(save){try{localStorage.setItem("zerno-lang",l)}catch{}
+    try{const u=new URL(location.href);u.searchParams.set("lang",l);history.replaceState(null,"",u)}catch{}}
+  applyStatic();tabsHTML();showCat(curCat);hoursUI();fillDays();fillTimes();bookingTexts();stripHTML();navState();
+  if(dlg.open&&!$("dlgForm").hidden)pickupOptions();
+  if(lb.classList.contains("open"))lbCaption();
+  $("toast").classList.remove("show");$("toast").textContent="";
+}
+document.querySelectorAll("[data-lang]").forEach(b=>b.addEventListener("click",()=>{if(b.dataset.lang!==lang)setLang(b.dataset.lang)}));
+setLang(lang,false);
+
+// 3D cup: loaded only when its tile gets close to the screen
+new IntersectionObserver((es,o)=>{if(!es[0].isIntersecting)return;o.disconnect();
+  Promise.all([import("three"),import("three/addons/environments/RoomEnvironment.js")]).then(([T,R])=>initCup(T,R.RoomEnvironment))
+    .catch(()=>{$("cupCap").textContent=t("cupNoNet");});
+},{rootMargin:"300px"}).observe($("cupTile"));
+function initCup(THREE,RoomEnvironment){
+  const stage=$("cupTile"),canvas=$("cup");let renderer;
+  try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});}catch(e){$("cupCap").textContent=t("cupNoGL");return}
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.outputColorSpace=THREE.SRGBColorSpace;
+  const scene=new THREE.Scene();scene.environment=new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(),.02).texture;
+  const cam=new THREE.PerspectiveCamera(28,1,.1,50);cam.position.set(0,1.6,2.9);cam.lookAt(0,.33,0);
+  const k=new THREE.DirectionalLight(0xffd9a8,1.6);k.position.set(-2,3,2);scene.add(k);
+  const V=p=>p.map(([x,y])=>new THREE.Vector2(x,y));
+  const por=new THREE.MeshPhysicalMaterial({color:0xf6f2ea,roughness:.2,clearcoat:1,clearcoatRoughness:.06});
+  const set=new THREE.Group();scene.add(set);
+  set.add(new THREE.Mesh(new THREE.LatheGeometry(V([[0,0],[.29,0],[.315,.008],[.325,.03],[.32,.045],[.35,.07],[.42,.15],[.47,.27],[.5,.43],[.517,.6],[.525,.74],[.528,.8],[.527,.815],[.521,.823],[.512,.822],[.505,.812],[.5,.78],[.49,.6],[.465,.42],[.41,.24],[.31,.13],[.16,.095],[0,.09]]),96),por));
+  set.children[0].position.y=.05;
+  const band=new THREE.Mesh(new THREE.CylinderGeometry(.5285,.5275,.018,96,1,true),new THREE.MeshPhysicalMaterial({color:0x1f3a2e,roughness:.25,clearcoat:1}));band.position.y=.815;set.add(band);
+  const curve=new THREE.CatmullRomCurve3([[.5,.66],[.62,.69],[.72,.63],[.74,.5],[.68,.37],[.57,.3],[.47,.29]].map(([x,y])=>new THREE.Vector3(x,y+.05,0)));
+  const h=new THREE.Mesh(new THREE.TubeGeometry(curve,48,.038,16,false),por);h.scale.z=.75;set.add(h);
+  set.add(new THREE.Mesh(new THREE.LatheGeometry(V([[0,0],[.4,0],[.42,.012],[.43,.03],[.6,.045],[.76,.07],[.85,.098],[.88,.118],[.877,.13],[.865,.132],[.78,.103],[.62,.078],[.45,.064],[.36,.055],[.33,.05],[0,.05]]),96),por));
+  const S=512,cv=document.createElement("canvas");cv.width=cv.height=S;const g=cv.getContext("2d");
+  const gr=g.createRadialGradient(S/2,S/2,S*.05,S/2,S/2,S/2);gr.addColorStop(0,"#b77843");gr.addColorStop(.7,"#8e5029");gr.addColorStop(1,"#4c2611");g.fillStyle=gr;g.fillRect(0,0,S,S);
+  const heart=(cx,cy,w,hh)=>{g.beginPath();g.moveTo(cx,cy+hh*.55);g.bezierCurveTo(cx-w*1.1,cy-hh*.05,cx-w*.55,cy-hh*.75,cx,cy-hh*.28);g.bezierCurveTo(cx+w*.55,cy-hh*.75,cx+w*1.1,cy-hh*.05,cx,cy+hh*.55);g.closePath();};
+  g.shadowColor="#f6ead9";g.shadowBlur=14;g.fillStyle="#f6ead9";heart(S/2,S*.52,S*.34,S*.56);g.fill();g.shadowBlur=6;g.fillStyle="#b98455";heart(S/2,S*.55,S*.2,S*.33);g.fill();g.fillStyle="#f6ead9";heart(S/2,S*.56,S*.15,S*.25);g.fill();
+  const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;
+  const surf=new THREE.Mesh(new THREE.CircleGeometry(.497,64),new THREE.MeshPhysicalMaterial({map:tex,roughness:.45,clearcoat:.3}));surf.rotation.x=-Math.PI/2;surf.position.y=.785;set.add(surf);
+  function size(){const b=stage.getBoundingClientRect();if(!b.width)return;renderer.setSize(b.width,b.height,false);cam.aspect=b.width/b.height;cam.fov=cam.aspect<1?40:28;cam.updateProjectionMatrix();}
+  new ResizeObserver(size).observe(stage);size();
+  const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches,AUTO=reduce?0:.25;let yaw=-.6,yawV=AUTO,drag=null,vis=true,run=false,last=0;
+  canvas.addEventListener("pointerdown",e=>{drag={x:e.clientX,t:performance.now()};canvas.setPointerCapture(e.pointerId);$("cupCap").style.opacity=0});
+  canvas.addEventListener("pointermove",e=>{if(!drag)return;const n=performance.now(),dx=e.clientX-drag.x;yaw+=dx*.01;yawV=dx*.01/(Math.max(16,n-drag.t)/1000);drag={x:e.clientX,t:n}});
+  const end=()=>{drag=null};canvas.addEventListener("pointerup",end);canvas.addEventListener("pointercancel",end);
+  function loop(){if(!run){run=true;last=performance.now();requestAnimationFrame(tick)}}
+  new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)loop()}).observe(stage);
+  function tick(n){if(!vis){run=false;return}const dt=Math.min(.05,(n-last)/1000);last=n;if(!drag){yaw+=yawV*dt;yawV+=(AUTO-yawV)*Math.min(1,dt*1.5)}
+    set.rotation.y=yaw;renderer.render(scene,cam);requestAnimationFrame(tick)}
+  loop();
+}
+</script>
+</body>
+</html>

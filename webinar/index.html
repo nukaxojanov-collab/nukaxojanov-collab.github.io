@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Школа декора — автовебинар (концепт)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fbf3ee; --ink:#2b1630; --muted:#6e5a6f; --plum:#5b2a5e; --rose:#e9a7a0; --blush:#f6d6cf;
+  --gold:#c9a052; --mint:#a9cfc1; --card:#ffffff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,sans-serif;overflow:hidden}
+.hero{position:relative;width:1440px;height:900px;padding:40px 88px;display:grid;grid-template-rows:auto 1fr}
+nav{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:3}
+.logo{font-family:"Playfair Display",serif;font-weight:700;font-size:26px;letter-spacing:.2px}
+.logo span{color:var(--gold)}
+.links{display:flex;gap:36px;font-size:15px;color:var(--muted)}
+.btn-ghost{border:1.5px solid var(--ink);border-radius:999px;padding:10px 22px;font-weight:700;font-size:14px}
+.body{display:grid;grid-template-columns:1.2fr .8fr;align-items:center;gap:40px;position:relative;z-index:2}
+.tag{display:inline-flex;align-items:center;gap:10px;background:var(--card);border-radius:999px;padding:8px 16px;font-size:14px;font-weight:700;color:var(--plum);box-shadow:0 6px 20px rgba(91,42,94,.08)}
+.dot{width:9px;height:9px;border-radius:50%;background:#e2554a;box-shadow:0 0 0 5px rgba(226,85,74,.18)}
+h1{font-family:"Playfair Display",serif;font-weight:700;font-size:62px;line-height:1.02;margin:26px 0 22px;letter-spacing:-.5px}
+h1 em{font-style:italic;color:var(--plum)}
+.lead{font-size:20px;line-height:1.55;color:var(--muted);max-width:560px}
+.points{display:flex;gap:28px;margin:30px 0 38px}
+.pt{display:flex;flex-direction:column;gap:4px}
+.pt b{font-size:24px;font-family:"Playfair Display",serif}
+.pt span{font-size:14px;color:var(--muted)}
+.cta{display:flex;align-items:center;gap:22px}
+.btn{background:var(--plum);color:#fff;border-radius:999px;padding:20px 38px;font-weight:700;font-size:18px;box-shadow:0 14px 30px rgba(91,42,94,.28)}
+.note{font-size:14px;color:var(--muted);line-height:1.4}
+/* visual */
+.visual{position:relative;height:640px}
+.frame{position:absolute;right:10px;top:90px;width:440px;height:500px;border-radius:240px 240px 28px 28px;background:linear-gradient(160deg,var(--blush),#efc3bb 60%,#e7b0a8);overflow:hidden;box-shadow:0 30px 60px rgba(91,42,94,.18)}
+.arch-light{position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,rgba(255,255,255,.55),transparent 55%)}
+.balloon{position:absolute;border-radius:50% 50% 48% 52%/55% 55% 45% 45%;box-shadow:inset -18px -22px 30px rgba(0,0,0,.12),inset 14px 14px 26px rgba(255,255,255,.45)}
+.balloon::after{content:"";position:absolute;left:50%;bottom:-10px;width:10px;height:10px;transform:translateX(-50%) rotate(45deg);background:inherit;border-radius:2px}
+.b1{width:190px;height:220px;left:60px;top:120px;background:#d98d8a}
+.b2{width:150px;height:175px;left:225px;top:70px;background:#f2e3d5}
+.b3{width:170px;height:195px;left:250px;top:250px;background:var(--plum)}
+.b4{width:120px;height:140px;left:110px;top:310px;background:var(--gold)}
+.b5{width:90px;height:105px;left:20px;top:300px;background:var(--mint)}
+.string{position:absolute;width:2px;background:rgba(43,22,48,.25)}
+.garland{position:absolute;left:-20px;top:20px;width:560px;height:120px;z-index:3}
+.card{position:absolute;background:var(--card);border-radius:20px;box-shadow:0 18px 40px rgba(43,22,48,.14);padding:16px 18px;z-index:4}
+.c1{left:0;top:420px;width:250px;display:flex;gap:14px;align-items:center}
+.play{width:46px;height:46px;border-radius:50%;background:var(--plum);display:grid;place-items:center;flex:none}
+.play::before{content:"";border-left:14px solid #fff;border-top:9px solid transparent;border-bottom:9px solid transparent;margin-left:4px}
+.c1 b{display:block;font-size:15px}
+.c1 span{font-size:13px;color:var(--muted)}
+.c2{right:-10px;top:40px;width:210px}
+.c2 .row{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-top:8px}
+.bar{height:6px;border-radius:9px;background:#f1e4e6;margin-top:10px;overflow:hidden}
+.bar i{display:block;height:100%;width:72%;background:linear-gradient(90deg,var(--rose),var(--plum))}
+.c2 b{font-size:14px}
+.confetti{position:absolute;border-radius:2px;z-index:1}
+</style>
+</head>
+<body>
+<section class="hero">
+  <nav>
+    <div class="logo">Праздник<span>.</span>Декор</div>
+    <div class="links"><span>Программа</span><span>Автор</span><span>Отзывы</span><span>Вопросы</span></div>
+    <div class="btn-ghost">Смотреть вебинар</div>
+  </nav>
+
+  <div class="body">
+    <div>
+      <span class="tag"><span class="dot"></span>Бесплатный вебинар · смотрите в любое время</span>
+      <h1>Декор праздников:<br>от первой <em>гирлянды</em><br>до первых заказов</h1>
+      <p class="lead">Покажем, как собрать композицию из шаров и текстиля, сколько стоит старт и где искать первых клиентов — за один вечер.</p>
+      <div class="points">
+        <div class="pt"><b>60 минут</b><span>без воды и спешки</span></div>
+        <div class="pt"><b>3 урока</b><span>внутри вебинара</span></div>
+        <div class="pt"><b>Чек-лист</b><span>закупки в подарок</span></div>
+      </div>
+      <div class="cta">
+        <div class="btn">Смотреть бесплатно</div>
+        <div class="note">Регистрация за 30 секунд —<br>ссылка придёт в Telegram</div>
+      </div>
+    </div>
+
+    <div class="visual">
+      <svg class="garland" viewBox="0 0 560 120" aria-hidden="true">
+        <path d="M0 20 Q280 110 560 20" fill="none" stroke="#2b1630" stroke-opacity=".35" stroke-width="2"/>
+        <g>
+          <polygon points="40,32 70,40 52,72" fill="#c9a052"/>
+          <polygon points="95,48 128,54 106,88" fill="#e9a7a0"/>
+          <polygon points="155,60 190,63 168,98" fill="#5b2a5e"/>
+          <polygon points="220,66 256,67 236,103" fill="#a9cfc1"/>
+          <polygon points="288,67 324,65 308,102" fill="#c9a052"/>
+          <polygon points="356,62 390,58 376,95" fill="#e9a7a0"/>
+          <polygon points="420,50 452,44 444,80" fill="#5b2a5e"/>
+          <polygon points="480,36 510,28 506,62" fill="#a9cfc1"/>
+        </g>
+      </svg>
+      <div class="frame">
+        <div class="arch-light"></div>
+        <div class="string" style="left:155px;top:345px;height:200px"></div>
+        <div class="string" style="left:300px;top:250px;height:300px"></div>
+        <div class="string" style="left:335px;top:450px;height:120px"></div>
+        <div class="balloon b2"></div>
+        <div class="balloon b1"></div>
+        <div class="balloon b3"></div>
+        <div class="balloon b5"></div>
+        <div class="balloon b4"></div>
+      </div>
+      <div class="card c1"><div class="play"></div><div><b>Урок 1. Первая композиция</b><span>12 минут · из 3 уроков</span></div></div>
+      <div class="card c2"><b>Ваш прогресс</b><div class="bar"><i></i></div><div class="row"><span>Урок 2 из 3</span><span>72%</span></div></div>
+      <span class="confetti" style="left:40px;top:110px;width:12px;height:12px;background:#c9a052;transform:rotate(20deg)"></span>
+      <span class="confetti" style="left:10px;top:250px;width:9px;height:9px;background:#e9a7a0;border-radius:50%"></span>
+      <span class="confetti" style="right:0;top:610px;width:14px;height:6px;background:#5b2a5e;transform:rotate(-25deg)"></span>
+      <span class="confetti" style="left:240px;top:620px;width:10px;height:10px;background:#a9cfc1;transform:rotate(40deg)"></span>
+    </div>
+  </div>
+</section>
+</body>
+</html>

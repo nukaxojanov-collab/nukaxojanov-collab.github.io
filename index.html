@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Нурмухаммед — сайты и лендинги</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Onest:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f5f2;--surface:#fff;--fg:#16201b;--muted:#56645c;--line:#d6ddd7;--accent:#1f7a55;--accent-ink:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#101613;--surface:#17201b;--fg:#e7eee9;--muted:#9db0a5;--line:#2a3630;--accent:#5cc897;--accent-ink:#0c1310}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 Onest,"Segoe UI",system-ui,sans-serif}
+.wrap{max-width:1040px;margin:0 auto;padding:48px 16px 64px;display:grid;gap:40px}
+h1{font:700 clamp(28px,5vw,46px)/1.1 Unbounded,system-ui,sans-serif;margin:0}
+h2{font:500 21px/1.25 Unbounded,system-ui,sans-serif;margin:0}
+.lead{color:var(--muted);font-size:18px;max-width:64ch;margin:14px 0 0}
+.skills{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:18px 0 0}
+.skills li{border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:14px;background:var(--surface)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:22px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:grid;grid-template-rows:auto 1fr}
+.card img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover}
+.info{padding:18px 20px 20px;display:grid;gap:10px;align-content:start}
+.tag{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.info p{margin:0;color:var(--muted);font-size:15px}
+.open{justify-self:start;background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:600;padding:9px 18px;border-radius:10px}
+.note{border-top:1px solid var(--line);padding-top:22px;color:var(--muted);max-width:64ch}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <h1>Нурмухаммед — сайты и лендинги для небольшого бизнеса</h1>
+    <p class="lead">Ниже учебные работы. Компании вымышленные, адреса и телефоны — заглушки. Коммерческих проектов у меня пока нет: эти демо показывают, как я собираю сайт — структура, мобильная версия, формы, детали.</p>
+    <ul class="skills">
+      <li>Лендинги и сайты-визитки (HTML/CSS/JS)</li>
+      <li>Макеты в Figma</li>
+      <li>Правки готовых сайтов</li>
+      <li>Мобильная версия</li>
+      <li>Формы заявок в Telegram</li>
+    </ul>
+  </header>
+
+  <section class="grid" aria-label="Работы">
+    <article class="card">
+      <img src="barbershop/img/v3/hero.jpg" alt="Демо-сайт барбершопа: кресло под софитом" loading="lazy">
+      <div class="info">
+        <span class="tag">Учебный демо-сайт</span>
+        <h2>Барбершоп «Острие»</h2>
+        <p>Услуги и цены вкладками, мастера, онлайн-запись с выбором мастера и времени, галерея.</p>
+        <a class="open" href="barbershop/">Открыть</a>
+      </div>
+    </article>
+    <article class="card">
+      <img src="cafe/img/v3/hero.jpg" alt="Демо-сайт кофейни" loading="lazy">
+      <div class="info">
+        <span class="tag">Учебный демо-сайт</span>
+        <h2>Кофейня «Зерно»</h2>
+        <p>Меню вкладками с корзиной навынос, бронь стола, часы работы со статусом «открыто/закрыто».</p>
+        <a class="open" href="cafe/">Открыть</a>
+      </div>
+    </article>
+    <article class="card">
+      <img src="webinar/first-screen.png" alt="Концепт первого экрана лендинга автовебинара" loading="lazy">
+      <div class="info">
+        <span class="tag">Концепт первого экрана</span>
+        <h2>Лендинг автовебинара</h2>
+        <p>Первый экран для онлайн-школы декора праздников: оффер, факты о вебинаре, кнопка регистрации.</p>
+        <a class="open" href="webinar/">Открыть</a>
+      </div>
+    </article>
+  </section>
+
+  <p class="note">Работаю удалённо из Ташкента. Пишите в Telegram — обсудим задачу, сроки и стоимость.</p>
+</main>
+</body>
+</html>

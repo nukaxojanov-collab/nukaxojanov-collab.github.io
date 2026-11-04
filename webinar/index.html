@@ -12,8 +12,9 @@
   --gold:#c9a052; --mint:#a9cfc1; --card:#ffffff;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,sans-serif;overflow:hidden}
-.hero{position:relative;width:1440px;height:900px;padding:40px 88px;display:grid;grid-template-rows:auto 1fr}
+body{background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,sans-serif;overflow-x:hidden}
+.hero{position:relative;max-width:1440px;min-height:900px;margin:0 auto;padding:40px 88px;display:grid;grid-template-rows:auto 1fr}
+.concept-note{max-width:1440px;margin:0 auto;padding:0 88px 40px;font-size:14px;color:var(--muted)}
 nav{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:3}
 .logo{font-family:"Playfair Display",serif;font-weight:700;font-size:26px;letter-spacing:.2px}
 .logo span{color:var(--gold)}
@@ -57,6 +58,23 @@ h1 em{font-style:italic;color:var(--plum)}
 .bar i{display:block;height:100%;width:72%;background:linear-gradient(90deg,var(--rose),var(--plum))}
 .c2 b{font-size:14px}
 .confetti{position:absolute;border-radius:2px;z-index:1}
+@media (max-width:1100px){
+  .hero{padding:24px 16px;min-height:auto}
+  .links{display:none}
+  .btn-ghost{padding:8px 14px;font-size:13px}
+  .logo{font-size:21px}
+  .body{grid-template-columns:1fr;gap:12px;margin-top:20px}
+  h1{font-size:40px}
+  .lead{font-size:17px}
+  .points{gap:18px;flex-wrap:wrap}
+  .cta{flex-wrap:wrap}
+  .visual{height:540px;max-width:470px;width:100%;margin:0 auto}
+  .frame{width:min(440px,100%);right:0;top:80px;height:440px}
+  .c1{left:0;top:400px;width:240px}
+  .c2{right:0;top:30px}
+  .garland{width:100%;left:0}
+  .concept-note{padding:0 16px 32px}
+}
 </style>
 </head>
 <body>
@@ -117,5 +135,6 @@ h1 em{font-style:italic;color:var(--plum)}
     </div>
   </div>
 </section>
+<p class="concept-note">Концепт первого экрана для портфолио. Название, тексты и цифры примерные.</p>
 </body>
 </html>
